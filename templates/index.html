@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Manatee Sound Analyzer</title>
+    <script src="{{ url_for('static', filename='recorder.js') }}"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 2em;
+            background: #0f172a;
+            color: white;
+        }
+
+        .container {
+            background: #1e293b;
+            padding: 2em;
+            border-radius: 8px;
+            max-width: 700px;
+            margin: auto;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+            color: #60a5fa;
+        }
+
+        label {
+            display: block;
+            margin-top: 1.5em;
+            font-weight: bold;
+        }
+
+        input[type="file"], select, button {
+            width: 100%;
+            padding: 0.7em;
+            margin-top: 0.5em;
+            border-radius: 5px;
+            border: none;
+        }
+
+        .upload-box {
+            border: 2px dashed #60a5fa;
+            border-radius: 8px;
+            padding: 2em;
+            text-align: center;
+            cursor: pointer;
+            background: #1e3a8a;
+        }
+
+        .upload-box:hover {
+            background: #1e40af;
+        }
+
+        .btn {
+            margin-top: 2em;
+            padding: 0.8em;
+            font-weight: bold;
+            background-color: #3b82f6;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            background-color: #2563eb;
+        }
+
+        .options-group {
+            margin-top: 1em;
+            padding: 1em;
+            border-radius: 6px;
+            background: #334155;
+        }
+
+        #fileNameDisplay {
+            margin-top: 0.5em;
+            font-style: italic;
+            color: #93c5fd;
+        }
+
+        #loadingMessage {
+            margin-top: 1em;
+            text-align: center;
+            font-style: italic;
+            color: #facc15;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>Manatee Sound Analyzer</h2>
+
+    <form method="POST" enctype="multipart/form-data" onsubmit="return showLoading()">
+        <!-- Audio Upload -->
+        <label for="audioFile">Upload Audio File (.wav or .mp3):</label>
+        <div class="upload-box" onclick="document.getElementById('audioFile').click()">
+            Drag & Drop or Click to Upload
+        </div>
+        <input id="audioFile" type="file" name="audioFile" accept=".wav,.mp3" style="display: none;" onchange="showFileName(this)">
+        <p id="fileNameDisplay"></p>
+
+        <!-- Audio Recording -->
+        <label>Record Using Microphone:</label>
+        <button type="button" onclick="startRecording()">🎤 Start Recording</button>
+        <button type="button" onclick="stopRecording()">🛑 Stop & Attach</button>
+        <audio id="recordedAudio" controls style="display:none;"></audio>
+
+        <!-- Detection Info (Auto-Ensemble) -->
+        <div class="options-group">
+            <label><strong>Detection:</strong></label>
+            <p>All detection models (HMM, LSTM) will be automatically applied. Final decision is based on ensemble voting.</p>
+        </div>
+
+        <button class="btn" id="analyzeBtn" type="submit">🚀 Analyze Audio</button>
+        <div id="loadingMessage">⏳ Analyzing... Please wait.</div>
+    </form>
+</div>
+
+<script>
+    function showFileName(input) {
+        const fileName = input.files.length > 0 ? input.files[0].name : "No file selected";
+        document.getElementById("fileNameDisplay").textContent = "Selected File: " + fileName;
+    }
+
+    function showLoading() {
+        const btn = document.getElementById("analyzeBtn");
+        const loading = document.getElementById("loadingMessage");
+
+        btn.disabled = true;
+        btn.textContent = "⏳ Analyzing...";
+        loading.style.display = "block";
+
+        return true;  // Allow form to submit
+    }
+</script>
+</body>
+</html>
