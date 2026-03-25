@@ -1,4 +1,4 @@
-# Manatee Sound Analyzer
+# Manatee Call Detector
 
 A web-based audio analysis system for detecting manatee vocalizations from uploaded audio files. This project combines signal preprocessing, feature extraction, and machine learning models to identify potential manatee sounds and summarize the results in a browser-based interface.
 
