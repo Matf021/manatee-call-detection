@@ -17,7 +17,7 @@ The system includes:
 
 ## My Contribution
 
-In this group project, my main contribution focused on the HMM-based system and the audio processing pipeline, including:
+My main contribution focused on the HMM-based system and the audio processing pipeline, including:
 
 - designing and implementing the HMM-based detection workflow
 - building the MFCC extraction and preprocessing pipeline
