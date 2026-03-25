@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Detection Results</title>
+    <style>
+        body {
+            font-family: Arial;
+            background: #0f172a;
+            color: white;
+            padding: 2em;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1em;
+        }
+
+        .download-btn {
+            background-color: #10b981;
+            padding: 0.6em 1em;
+            border-radius: 6px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+        }
+
+        .download-btn:hover {
+            background-color: #059669;
+        }
+
+        .table-box {
+            background: #1e293b;
+            padding: 2em;
+            border-radius: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1em;
+        }
+
+        th,
+        td {
+            padding: 10px;
+            text-align: center;
+            border: 1px solid #334155;
+        }
+
+        th {
+            background-color: #3b82f6;
+        }
+
+        .yes {
+            color: #22c55e;
+            font-weight: bold;
+        }
+
+        .no {
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .HS {
+            color: #eab308;
+            font-weight: bold;
+        }
+
+        .K {
+            color: #38bdf8;
+            font-weight: bold;
+        }
+
+        .Others {
+            color: #a78bfa;
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Detection Results</h2>
+            {% if csv_filename %}
+            <a href="{{ url_for('download_results', filename=csv_filename) }}" class="download-btn"
+                download="{{ csv_filename }}">
+                💾 Download CSV
+            </a>
+            {% endif %}
+        </div>
+
+        <label for="filterSelect">Filter by:</label>
+        <select id="filterSelect" onchange="filterTable()">
+            <option value="all">Show All</option>
+            <option value="yes">Only Manatees</option>
+            <option value="no">Only Others</option>
+        </select>
+
+        <div class="table-box">
+            <table class="data" id="resultsTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Start Time</th>
+                        <th>End Time</th>
+                        <th>Manatee Detected</th>
+                        <th>Confidence</th>
+                        <th>HMM Confidence</th>
+                        <th>LSTM Confidence</th>
+                        <th>Filename</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                    <tr>
+                        <td class="index">{{ loop.index }}</td>
+                        <td>{{ row.start_time }}</td>
+                        <td>{{ row.end_time }}</td>
+                        <td class="{{ 'yes' if row.is_manatee == 'Yes' else 'no' }}">
+                            {{ row.is_manatee }}
+                        </td>
+                        <td>{{ row.avg_confidence }}</td>
+                        <td>{{ row.hmm_confidence }}</td>
+                        <td>{{ row.lstm_confidence }}</td>
+                        <td>{{ row.file }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        function filterTable() {
+            const filter = document.getElementById("filterSelect").value;
+            const rows = Array.from(document.querySelectorAll("#resultsTable tbody tr"));
+
+            rows.forEach(row => {
+                const manateeCell = row.querySelector("td:nth-child(4)").textContent.trim();
+                const vocalCell = row.querySelector("td:nth-child(6)").textContent.trim();
+
+                let show = false;
+                if (filter === "all") show = true;
+                else if (filter === "yes" && manateeCell === "Yes") show = true;
+                else if (filter === "no" && manateeCell === "No") show = true;
+                else if (["HS", "K", "Others"].includes(filter) && vocalCell === filter) show = true;
+
+                row.style.display = show ? "" : "none";
+            });
+
+            let idx = 1;
+            rows.forEach(row => {
+                if (row.style.display !== "none") {
+                    row.querySelector("td.index").textContent = idx++;
+                }
+            });
+        }
+
+        window.addEventListener('DOMContentLoaded', filterTable);
+    </script>
+</body>
+
+</html>
