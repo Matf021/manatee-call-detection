@@ -6,11 +6,11 @@ import time
 from flask import Flask, render_template, request
 from flask import send_from_directory
 from werkzeug.utils import secure_filename
-from pipeline_script import process_audio_pipeline
+from src.pipeline import process_audio_pipeline
 
 # Detection model imports
 from models.lstm_detection.inference import run_detection_model as run_lstm_detection
-from models.hmm_detection.Inference_HMM import run_detection_model as run_hmm_detection
+from models.hmm_detection.inference import run_detection_model as run_hmm_detection
 
 app = Flask(__name__)
 RESULTS_FOLDER = "results"
